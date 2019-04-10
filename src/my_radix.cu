@@ -12,7 +12,7 @@
 
 using namespace std;
 
-#define blockSize 256
+#define SIZEOFBLOCK 256
 
 
 cudaError_t addWithCuda(int *c, const int *a, const int *b, unsigned int size);
@@ -100,7 +100,7 @@ __global__ void generateShouldIndex(int* shouldIndex, int* flag, int* iDown, int
 
 void permute(int* arr, int* flag, int* iDown, int* iUp, int n) {
   int* shouldArr = (int*)malloc(n * sizeof(int));
-  int numBlocks = (n + blockSize - 1) / blockSize;
+  int numBlocks = (n + SIZEOFBLOCK - 1) / SIZEOFBLOCK;
 
   int* d_flag;
 
@@ -117,7 +117,7 @@ void permute(int* arr, int* flag, int* iDown, int* iUp, int n) {
   cudaMemcpy(d_flag, flag, n * sizeof(int), cudaMemcpyHostToDevice);
   cudaMemcpy(d_iDown, iDown, n * sizeof(int), cudaMemcpyHostToDevice);
   cudaMemcpy(d_iUp, iUp, n * sizeof(int), cudaMemcpyHostToDevice);
-  generateShouldIndex<<<numBlocks,blockSize>>>(d_shouldIndex, d_flag, d_iDown, d_iUp, n);
+  generateShouldIndex<<<numBlocks,SIZEOFBLOCK>>>(d_shouldIndex, d_flag, d_iDown, d_iUp, n);
   cudaDeviceSynchronize();
 
   cudaMemcpy(h_shouldIndex, d_shouldIndex, n * sizeof(int), cudaMemcpyDeviceToHost);
@@ -134,7 +134,7 @@ void permute(int* arr, int* flag, int* iDown, int* iUp, int n) {
 }
 
 void split(int* arr, int n, int idx) {
-  int numBlocks = (n + blockSize - 1) / blockSize;
+  int numBlocks = (n + SIZEOFBLOCK - 1) / SIZEOFBLOCK;
   
   int* h_flag = (int*)malloc(n * sizeof(int));
   int* d_flag;
@@ -146,7 +146,7 @@ void split(int* arr, int n, int idx) {
 
   cudaMemcpy(d_arr, arr, n * sizeof(int), cudaMemcpyHostToDevice);
 
-	generateFlag<<<numBlocks,blockSize>>>(d_flag, d_arr, n, idx);
+	generateFlag<<<numBlocks,SIZEOFBLOCK>>>(d_flag, d_arr, n, idx);
   cudaDeviceSynchronize();
   
   cudaMemcpy(h_flag, d_flag, n * sizeof(int), cudaMemcpyDeviceToHost);
