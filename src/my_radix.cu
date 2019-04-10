@@ -12,6 +12,9 @@
 
 using namespace std;
 
+#define blockSize 256;
+
+
 cudaError_t addWithCuda(int *c, const int *a, const int *b, unsigned int size);
 
 void printToFile(int* arr, int n) {
@@ -81,7 +84,7 @@ int* generateIUp(int* flag, int n) {
 	return iUp;
 }
 
-int* generateShouldIndex(int* flag, int* iDown, int* iUp, int n) {
+__global__ void generateShouldIndex(int* shouldIndex, int* flag, int* iDown, int* iUp, int n) {
 	int* shouldIndex = (int*)malloc(n * sizeof(int));
 
 	// parallel
@@ -93,17 +96,35 @@ int* generateShouldIndex(int* flag, int* iDown, int* iUp, int n) {
 			shouldIndex[i] = iUp[i];
 		}
 	}
-	return shouldIndex;
 }
 
 void permute(int* arr, int* flag, int* iDown, int* iUp, int n) {
-	int* shouldArr = (int*)malloc(n * sizeof(int));
+  int* shouldArr = (int*)malloc(n * sizeof(int));
+  int numBlocks = (n + blockSize - 1) / blockSize;
 
-	int* shouldIndex = generateShouldIndex(flag, iDown, iUp, n);
+  int* d_flag;
 
-	// parallel
+  int* h_shouldIndex = (int*)malloc(n * sizeof(int));
+  int* d_shouldIndex;
+  int* d_iDown;
+  int* d_iUp;
+
+  cudaMalloc(&d_shouldIndex, n * sizeof(int));
+  cudaMalloc(&d_flag, n * sizeof(int));
+  cudaMalloc(&d_iDown, n * sizeof(int));
+  cudaMalloc(&d_iUp, n * sizeof(int));
+
+  cudaMemcpy(d_flag, flag, n * sizeof(int), cudaMemcpyHostToDevice);
+  cudaMemcpy(d_iDown, iDown, n * sizeof(int), cudaMemcpyHostToDevice);
+  cudaMemcpy(d_iUp, iUp, n * sizeof(int), cudaMemcpyHostToDevice);
+  generateShouldIndex<<<numBlocks,blockSize>>>(d_shouldIndex, d_flag, d_iDown, d_iUp, n);
+  cudaDeviceSynchronize();
+
+  cudaMemcpy(h_shouldIndex, d_shouldIndex, n * sizeof(int), cudaMemcpyDeviceToHost);
+  
+  // parallel
 	for (int i = 0; i < n; i++) {
-		shouldArr[shouldIndex[i]] = arr[i];
+		shouldArr[h_shouldIndex[i]] = arr[i];
 	}
 
 	// parallel
@@ -113,9 +134,8 @@ void permute(int* arr, int* flag, int* iDown, int* iUp, int n) {
 }
 
 void split(int* arr, int n, int idx) {
-	int blockSize = 256;
-	int numBlocks = (n + blockSize - 1) / blockSize;
-
+  int numBlocks = (n + blockSize - 1) / blockSize;
+  
   int* h_flag = (int*)malloc(n * sizeof(int));
   int* d_flag;
 
