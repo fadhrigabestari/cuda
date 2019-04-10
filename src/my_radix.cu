@@ -156,7 +156,7 @@ int main(int argc, char** argv)
 		exit(0);
 	}
 	else {
-		n = int(argv[1]);
+		n = atoi(argv[1]);
 	}
 
 
