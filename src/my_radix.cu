@@ -85,8 +85,6 @@ int* generateIUp(int* flag, int n) {
 }
 
 __global__ void generateShouldIndex(int* shouldIndex, int* flag, int* iDown, int* iUp, int n) {
-	int* shouldIndex = (int*)malloc(n * sizeof(int));
-
 	// parallel
 	for (int i = 0; i < n; i++) {
 		if (flag[i] == 0) {
