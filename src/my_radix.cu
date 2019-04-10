@@ -12,7 +12,7 @@
 
 using namespace std;
 
-#define blockSize 256;
+#define blockSize 256
 
 
 cudaError_t addWithCuda(int *c, const int *a, const int *b, unsigned int size);
