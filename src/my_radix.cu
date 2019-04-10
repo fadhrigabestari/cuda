@@ -135,8 +135,6 @@ void split(int* arr, int n, int idx) {
 	int* iUp = generateIUp(h_flag, n);
 
   permute(arr, h_flag, iDown, iUp, n);
-  cout << "progress: ";
-  printArr(arr, n);
 }
 
 
@@ -150,16 +148,16 @@ void radixSort(int* arr, int n) {
 
 int main(int argc, char** argv)
 {
-	int n = 2;
+	int n;
 
-	//if (argc != 2) {
-		//cout << "Wrong input" << endl;
-		//cout << "./radix_sort <N>" << endl;
-		//exit(0);
-	//}
-	//else {
-		//n = int(argv[1]);
-	//}
+	if (argc != 2) {
+		cout << "Wrong input" << endl;
+		cout << "./radix_sort <N>" << endl;
+		exit(0);
+	}
+	else {
+		n = int(argv[1]);
+	}
 
 
 	int * arr = (int*)malloc(n * sizeof(int));
@@ -177,5 +175,5 @@ int main(int argc, char** argv)
 	cout << "Parallel Radix Sort Time: " << elapsedTime << endl;
 	cout << endl;
 
-    return 0;
+  return 0;
 }
