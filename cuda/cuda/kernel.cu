@@ -119,15 +119,24 @@ void split(int* arr, int n, int idx) {
   int* h_flag = (int*)malloc(n * sizeof(int));
   int* d_flag;
 
-	cudaMalloc(&d_flag, n * sizeof(int));
-	generateFlag<<<numBlocks,blockSize>>>(d_flag, arr, n, idx);
-	cudaDeviceSynchronize();
-	cudaMemcpy(h_flag, d_flag, n * sizeof(int), cudaMemcpyDeviceToHost);
+  int* d_arr;
+
+  cudaMalloc(&d_flag, n * sizeof(int));
+  cudaMalloc(&d_arr, n * sizeof(int));
+
+  cudaMemcpy(d_arr, arr, n * sizeof(int), cudaMemcpyHostToDevice);
+
+	generateFlag<<<numBlocks,blockSize>>>(d_flag, d_arr, n, idx);
+  cudaDeviceSynchronize();
+  
+  cudaMemcpy(h_flag, d_flag, n * sizeof(int), cudaMemcpyDeviceToHost);
 
 	int* iDown = generateIDown(h_flag, n);
 	int* iUp = generateIUp(h_flag, n);
 
-	permute(arr, h_flag, iDown, iUp, n);
+  permute(arr, h_flag, iDown, iUp, n);
+  cout << "progress: ";
+  printArr(arr, n);
 }
 
 
