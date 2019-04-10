@@ -123,7 +123,6 @@ void split(int* arr, int n, int idx) {
 	generateFlag<<<numBlocks,blockSize>>>(d_flag, arr, n, idx);
 	cudaDeviceSynchronize();
 	cudaMemcpy(h_flag, d_flag, n * sizeof(int), cudaMemcpyDeviceToHost);
-	printArr(h_flag, n);
 
 	int* iDown = generateIDown(h_flag, n);
 	int* iUp = generateIUp(h_flag, n);
@@ -161,7 +160,8 @@ int main(int argc, char** argv)
 
 	clock_t beginTime = clock();
   radixSort(arr, n);
-	clock_t endTime = clock();	
+  clock_t endTime = clock();	
+  printArr(arr, n);
 
 	double elapsedTime = (double)endTime - beginTime / CLOCKS_PER_SEC;
 
