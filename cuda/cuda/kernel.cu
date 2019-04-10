@@ -142,24 +142,52 @@ void radixSort(int* arr, int n) {
 	}
 }
 
-int main() {
-	int64_t nvtx_scale = ((int64_t)1) << 14;
+int main(int argc, char** argv)
+{
+	int n = 2;
 
-	uint64_t* cost = (uint64_t*)malloc(sizeof(uint64_t)*nvtx_scale);
+	//if (argc != 2) {
+		//cout << "Wrong input" << endl;
+		//cout << "./radix_sort <N>" << endl;
+		//exit(0);
+	//}
+	//else {
+		//n = int(argv[1]);
+	//}
 
-	for (int64_t i = 0; i < nvtx_scale; i++)
-		cost[i] = uint64_t(123456789);
 
-	uint64_t* dcost;
-	cudaMalloc(&dcost, nvtx_scale * sizeof(uint64_t));
-	cudaMemcpy(dcost, cost, sizeof(uint64_t)*nvtx_scale, cudaMemcpyHostToDevice);
+	int * arr = (int*)malloc(n * sizeof(int));
 
-	memset(cost, 0, sizeof(uint64_t)*nvtx_scale);
-	cudaMemcpy(cost, dcost, sizeof(uint64_t)*nvtx_scale, cudaMemcpyDeviceToHost);
+	rng(arr, n);
+	printArr(arr,n);
 
-	for (int i = 0; i < 10; i++) {
-		std::cout << i << " " << cost[i] << std::endl;
+	clock_t beginTime = clock();
+
+	int* flag = (int *)malloc(n * sizeof(int));
+	int* d_flag;
+
+	// GENERATE FLAG
+	for (int i = 0; i < n; i++) {
+		if ((arr[i] >> 0) & 1 == 1) {
+			flag[i] = 1;
+		}
+		else {
+			flag[i] = 0;
+		}
 	}
+	printArr(flag, n);
+	cudaMalloc(&d_flag, n*sizeof(int));
 
-	return 0;
+	cudaMemcpy(d_flag, flag, n*sizeof(int), cudaMemcpyHostToDevice);
+	memset(flag, 0, n*sizeof(int));
+	cudaMemcpy(flag, d_flag, n*sizeof(int), cudaMemcpyDeviceToHost);
+	printArr(flag, n);
+	clock_t endTime = clock();	
+
+	double elapsedTime = (double)endTime - beginTime / CLOCKS_PER_SEC;
+
+	cout << "Parallel Radix Sort Time: " << elapsedTime << endl;
+	cout << endl;
+
+    return 0;
 }
