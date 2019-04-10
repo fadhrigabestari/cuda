@@ -116,21 +116,19 @@ void split(int* arr, int n, int idx) {
 	int blockSize = 256;
 	int numBlocks = (n + blockSize - 1) / blockSize;
 
-	int* flag;
-	int* c_flag = (int*)malloc(n * sizeof(int));
+  int* h_flag = (int*)malloc(n * sizeof(int));
+  int* d_flag;
 
-	//cudaMalloc((int**)&g_arr, n * sizeof(int));
-	//cudaMemcpy(g_arr, arr, n * sizeof(int), cudaMemcpyHostToDevice);
-	cudaMalloc((int**)&flag, n * sizeof(int));
-	generateFlag<<<1,1>>>(flag, arr, n, idx);
+	cudaMalloc(&d_flag, n * sizeof(int));
+	generateFlag<<<numBlocks,blockSize>>>(d_flag, arr, n, idx);
 	cudaDeviceSynchronize();
-	cudaMemcpy(c_flag, flag, n * sizeof(int), cudaMemcpyDeviceToHost);
-	printArr(c_flag, n);
+	cudaMemcpy(h_flag, d_flag, n * sizeof(int), cudaMemcpyDeviceToHost);
+	printArr(h_flag, n);
 
-	int* iDown = generateIDown(c_flag, n);
-	int* iUp = generateIUp(c_flag, n);
+	int* iDown = generateIDown(h_flag, n);
+	int* iUp = generateIUp(h_flag, n);
 
-	permute(arr, c_flag, iDown, iUp, n);
+	permute(arr, h_flag, iDown, iUp, n);
 }
 
 
@@ -162,26 +160,7 @@ int main(int argc, char** argv)
 	printArr(arr,n);
 
 	clock_t beginTime = clock();
-
-	int* flag = (int *)malloc(n * sizeof(int));
-	int* d_flag;
-
-	// GENERATE FLAG
-	for (int i = 0; i < n; i++) {
-		if ((arr[i] >> 0) & 1 == 1) {
-			flag[i] = 1;
-		}
-		else {
-			flag[i] = 0;
-		}
-	}
-	printArr(flag, n);
-	cudaMalloc(&d_flag, n*sizeof(int));
-
-	cudaMemcpy(d_flag, flag, n*sizeof(int), cudaMemcpyHostToDevice);
-	memset(flag, 0, n*sizeof(int));
-	cudaMemcpy(flag, d_flag, n*sizeof(int), cudaMemcpyDeviceToHost);
-	printArr(flag, n);
+  radixSort(arr, n);
 	clock_t endTime = clock();	
 
 	double elapsedTime = (double)endTime - beginTime / CLOCKS_PER_SEC;
