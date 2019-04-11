@@ -119,6 +119,11 @@ void permute(int* arr, int* flag, int* iDown, int* iUp, int n) {
   cudaDeviceSynchronize();
 
   cudaMemcpy(h_shouldIndex, d_shouldIndex, n * sizeof(int), cudaMemcpyDeviceToHost);
+
+  cudaFree(d_flag);
+  cudaFree(d_iDown);
+  cudaFree(d_iUp);
+  cudaFree(d_shouldIndex);
   
   // parallel
 	for (int i = 0; i < n; i++) {
@@ -148,6 +153,9 @@ void split(int* arr, int n, int idx) {
   cudaDeviceSynchronize();
   
   cudaMemcpy(h_flag, d_flag, n * sizeof(int), cudaMemcpyDeviceToHost);
+
+  cudaFree(d_flag);
+  cudaFree(d_arr);
 
 	int* iDown = generateIDown(h_flag, n);
 	int* iUp = generateIUp(h_flag, n);
@@ -181,14 +189,14 @@ int main(int argc, char** argv)
 	int * arr = (int*)malloc(n * sizeof(int));
 
   rng(arr, n);
-  printArr(arr, n);
 
 	clock_t beginTime = clock();
   radixSort(arr, n);
   clock_t endTime = clock();	
-  printArr(arr, n);
+ 
 
 	double elapsedTime = (double)endTime - beginTime / CLOCKS_PER_SEC;
+	printToFile(arr, n);
 
 	cout << "Parallel Radix Sort Time: " << elapsedTime << endl;
 	cout << endl;
