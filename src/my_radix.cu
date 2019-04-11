@@ -189,14 +189,14 @@ int main(int argc, char** argv)
 	int * arr = (int*)malloc(n * sizeof(int));
 
   rng(arr, n);
-  printArr(arr, n);
 
 	clock_t beginTime = clock();
   radixSort(arr, n);
   clock_t endTime = clock();	
-  printArr(arr, n);
+ 
 
 	double elapsedTime = (double)endTime - beginTime / CLOCKS_PER_SEC;
+	printToFile(arr, n);
 
 	cout << "Parallel Radix Sort Time: " << elapsedTime << endl;
 	cout << endl;
