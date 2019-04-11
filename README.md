@@ -35,31 +35,31 @@ Jumlah *thread* per blok yang kami gunakan adalah 256 karena CUDA GPU menjalanka
 <br>
 Radix Sort serial : 14803
 <br>
-Radix Sort Paralel dengan CUDA : 156699
+Radix Sort Paralel dengan CUDA : 881442
 
 > N = 50.000
 <br>
 Radix Sort serial : 116493
 <br>
-Radix Sort Paralel dengan CUDA : 248837
+Radix Sort Paralel dengan CUDA : 3482720
 
 > N = 100.000
 <br>
 Radix Sort serial : 232686
 <br>
-Radix Sort Paralel dengan CUDA : 330071
+Radix Sort Paralel dengan CUDA : 12134100
 
 > N = 200.000
 <br>
 Radix Sort serial : 483184
 <br>
-Radix Sort Paralel dengan CUDA : 535068
+Radix Sort Paralel dengan CUDA : 46273670
 
 > N = 400.000
 <br>
 Radix Sort serial : 929879
 <br>
-Radix Sort Paralel dengan CUDA : 957559
+Radix Sort Paralel dengan CUDA : 170105000
 
 ### Analisis Perbandingan Kinerja Serial dan Paralel
-Berdasarkan percobaan dan perbandingan yang telah kami lakukan, didapatkan bahwa program paralel yang kami gunakan MPI_Scatter dan MPI_Gather membutuhkan waktu tambahan yaitu waktu untuk melakukan pembagian dan pengumpulan data dari ke empat task yang kami assign. Sehingga program paralel yang kami buat, akan lebih lambat pada n yang relatif kecil. Tetapi pada percobaan dengan n = 1.000.000, program paralel radix sort yang kami buat, memproses radix sort lebih cepat.
+Berdasarkan percobaan dan perbandingan yang telah kami lakukan, didapatkan bahwa program paralel dengan menggunakan CUDA membutuhkan waktu tambahan yaitu waktu untuk melakukan pengcopyan data dan melakukan alokasi memory pada GPU dan CPU. Sehingga program paralel yang kami buat, akan lebih lambat pada n yang relatif kecil.
