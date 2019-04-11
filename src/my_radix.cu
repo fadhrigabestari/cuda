@@ -19,7 +19,7 @@ cudaError_t addWithCuda(int *c, const int *a, const int *b, unsigned int size);
 
 void printToFile(int* arr, int n) {
 	ofstream fstream;
-	fstream.open("data/output");
+	fstream.open("../out/output");
 	for (int i = 0; i < n; i++) {
 		fstream << arr[i] << endl;
 	}
@@ -181,12 +181,10 @@ int main(int argc, char** argv)
 	int * arr = (int*)malloc(n * sizeof(int));
 
 	rng(arr, n);
-	printArr(arr,n);
 
 	clock_t beginTime = clock();
   radixSort(arr, n);
   clock_t endTime = clock();	
-  printArr(arr, n);
 
 	double elapsedTime = (double)endTime - beginTime / CLOCKS_PER_SEC;
 
